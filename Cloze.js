@@ -8,9 +8,10 @@ var Cloze = function(text, cloze) {
 }
 
 //function to return only the partial text by replacing the cloze text with an ellipsis (...)
+//todo:  put the validation check here
 Cloze.prototype.returnPartialText = function() {
-    this.partialText = this.text.replace(this.cloze, " . . . ");
-    return this.partialText;
+        this.partialText = this.text.replace(this.cloze, " . . . ");
+        return this.partialText;
 }
 
 //check answer function passes in the users input

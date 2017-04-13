@@ -1,4 +1,5 @@
-//todo:  add validation when entering a cloze card so that if the cloze text isn't found in the question, it throws an error.
+//todo:  add validation when entering a cloze card 
+//so that if the cloze text isn't found in the question, it throws an error.
 //todo:  add some validation for other fields
 //todo:  add some color
 //todo:  add some stuff to the readme file.
@@ -42,7 +43,7 @@ then run the function for that choice*/
 function mainMenu() {
     inquirer.prompt([{
         type: "list",
-        message: "Welcome to the Soccer Flash Card Game! Please make a selection below.",
+        message: "Welcome to the Soccer Flash Card Game! Please make a selection below.\n",
         choices: ["1. Play Game Using Cloze Cards", "2. Play Game Using Basic Cards", "3. Add My Own Cloze Cards", "4. Add My Own Basic Cards", "5. EXIT GAME"],
         name: "choice"
     }]).then(function(data) {
@@ -63,7 +64,7 @@ function mainMenu() {
                 break;
             case "5. EXIT GAME":
                 break;
-            //default case should never happen in theory because the selections are limited
+                //default case should never happen in theory because the selections are limited
             default:
                 throw "ERROR!";
         }
@@ -93,7 +94,7 @@ function askQuestions(count) {
             askQuestions(count);
         });
 
-    //when all questions have been asked, end the game
+        //when all questions have been asked, end the game
     } else {
         console.log("GAME OVER!");
         console.log("YOU ANSWERED " + newCloze.correctAnswers + "/" + newCloze.clozeCardsArr.length + " QUESTIONS CORRECTLY!");
@@ -174,27 +175,51 @@ function askBasicQuestions(count) {
 //Create createClozeCards function so the user can add their own cards
 function createClozeCards() {
     inquirer.prompt([{
-        type: "input",
-        message: "Please enter the question that you would like to add to the Flash Card:\n",
-        name: "userQuestion"
-    }, {
-        type: "input",
-        message: "Please enter the Cloze text (answer) to your question:\n",
-        name: "userAnswer"
-    }, {
-        type: "list",
-        message: "Would you like to add another Flash Card?",
-        choices: ["YES", "NO"],
-        name: "choice"
-    }]).then(function(data) {
-        console.log(data.userQuestion);
-        console.log(data.userAnswer);
-        newCloze.addNewCard(data.userQuestion, data.userAnswer);
+            type: "input",
+            message: "Please enter the question that you would like to add to the Flash Card:\n",
+            name: "userQuestion"
+        }, {
+            type: "input",
+            message: "Please enter the Cloze text (answer) to your question:\n",
+            name: "userAnswer"
+        }
 
-        if (data.choice === "YES") {
-            createClozeCards();
+    ]).then(function(data) {
+        var validateCloze = data.userQuestion.indexOf(data.userAnswer);
+        if (validateCloze < 0) {
+            console.log("THE ANSWER MUST BE FOUND IN THE QUESTION!");
+            
+            //ask the user if they would like to retry entering a card
+            inquirer.prompt([{
+                type: "list",
+                message: "Would you like to try again?",
+                choices: ["YES", "NO"],
+                name: "choice"
+            }]).then(function(data) {
+                if (data.choice === "YES") {
+                    createClozeCards();
+                } else {
+                    mainMenu();
+                }
+
+            });
         } else {
-            mainMenu();
+            newCloze.addNewCard(data.userQuestion, data.userAnswer);
+            console.log("Your new Cloze Card has been successfully added!");
+            //again ask if they want to retry
+            inquirer.prompt([{
+                type: "list",
+                message: "Would you like to enter another card?",
+                choices: ["YES", "NO"],
+                name: "choice"
+            }]).then(function(data) {
+                if (data.choice === "YES") {
+                    createClozeCards();
+                } else {
+                    mainMenu();
+                }
+
+            });
         }
 
     });
